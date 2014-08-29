@@ -37,7 +37,7 @@ setup(
     version = "0.0.1",
     description = "Command line browser for RCSB database",
     long_description = readme,
-    packages = ["browser", "downloader" ],
+    packages = ["browser" ],
     package_data = {},
     install_requires = [ ],
     author = "Dilawar Singh",

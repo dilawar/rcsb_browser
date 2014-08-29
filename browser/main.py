@@ -23,7 +23,7 @@ import xml.etree.ElementTree as ET
 
 
 logger = logging.getLogger('__name__')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 h1 = logging.StreamHandler(sys.stderr)
 h1.setLevel(logging.DEBUG)
@@ -80,10 +80,9 @@ class Query():
             self.getResults()
             if not self.ids:
                 print("Nothing found for query: %s" % self)
-            print self.ids
         size = kwargs.get('size', None)
         if not size:
-            size = min(1000, len(self.ids))
+            size = min(100, len(self.ids))
 
         logger.debug("Getting details of {} entries...".format(size+1))
         query = ",".join(self.ids[:size])
@@ -101,14 +100,22 @@ class Query():
         req = urllib2.Request(url)
         f = urllib2.urlopen(req)
         self.report = f.read()
-        with open(os.path.join(args.download_dir, 'custom_report.{}'.format(format))) as f:
-            print("INFO: Storing custom report: {}".format(args.download_dir))
+        with open(
+                os.path.join(self.args.download_dir, 'custom_report.{}'.format(format))
+                , "w") as f:
+            print("INFO: Storing custom report: {}".format(self.args.download_dir))
             f.write(self.report)
 
     def printReport(self):
         """Write report to console"""
-        pass
+        tree = ET.fromstring(self.report)
+        for child in tree.findall('./record'):
+            print("\n++++++++++")
+            for c in child:
+                print("{:>25} : {}".format(c.tag.split('.')[-1], c.text))
 
+def fetchIF(id, download_dir):
+    logger.info("Fetching id: {}".format(id))
 
 
 
@@ -123,6 +130,7 @@ def main():
             , nargs = '+'
             , help = 'Query text'
             )
+
     parser.add_argument('--query_type', '-qt', metavar='queryType'
             , default = 'AdvancedKeywordQuery'
             , help = "Type of this query, prefixed by org.pdb.query.simple"
@@ -148,7 +156,7 @@ def main():
         q.getStructureReport()
         q.printReport()
     elif args.fetch:
-        print("implement download pdb file")
+        fetchID(args.fetch, args.download_dir)
 
 if __name__ == "__main__":
     main()
