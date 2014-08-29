@@ -21,11 +21,13 @@ import sys
 import os
 import xml.etree.ElementTree as ET
 from query import Query
+from downloader import Downloader
 
 logger = logging.getLogger('rscb')
 
 def fetchIF(id, download_dir):
     logger.info("Fetching id: {}".format(id))
+    d = Downloader(id, download_dir)
 
 def main():
     import argparse
@@ -64,7 +66,10 @@ def main():
         q.getStructureReport()
         q.printReport()
     elif args.fetch:
-        fetchID(args.fetch, args.download_dir)
+        d = Downloader(args.fetch, args.download_dir)
+        d.downloadFiles()
+    else:
+        raise UserWarning("Unknown option")
 
 if __name__ == "__main__":
     main()
