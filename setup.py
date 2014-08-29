@@ -1,9 +1,7 @@
 import os
 import sys
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+
+from setuptools import setup
 
 with open("README.md") as f:
     readme = f.read()
@@ -20,7 +18,7 @@ classifiers = [
 setup(
     name = "rcsb_browser",
     version = "0.0.1",
-    description = "Short description of package",
+    description = "Command line browser for RCSB database",
     long_description = readme,
     packages = ["browser", "downloader" ],
     package_data = {},
@@ -30,4 +28,9 @@ setup(
     url = "http://github.com/dilawar/",
     license='GPL',
     classifiers=classifiers,
+    entry_points = {
+        'console_scripts': [
+            'rcsb_browser = browser.main.main',
+            ],
+        },
 )
