@@ -2,7 +2,7 @@
 """query_rcsb.py: 
     Query rscb
 
-Last modified: Fri Aug 29, 2014  12:44PM
+Last modified: Fri Aug 29, 2014  04:54PM
 
 """
     
@@ -101,29 +101,54 @@ class Query():
         req = urllib2.Request(url)
         f = urllib2.urlopen(req)
         self.report = f.read()
+        with open(os.path.join(args.download_dir, 'custom_report.{}'.format(format))) as f:
+            print("INFO: Storing custom report: {}".format(args.download_dir))
+            f.write(self.report)
+
+    def printReport(self):
+        """Write report to console"""
+        pass
+
+
+
 
 def main():
     import argparse
     # Argument parser.
     description = 'A script to download PDB files from RCSB Protein Data Bank'
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('--query', '-q', metavar='query'
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--query', '-q', metavar='query'
             , nargs = '+'
-            , required = True
             , help = 'Query text'
             )
     parser.add_argument('--query_type', '-qt', metavar='queryType'
             , default = 'AdvancedKeywordQuery'
             , help = "Type of this query, prefixed by org.pdb.query.simple"
             )
+
+    parser.add_argument('--download_dir', '-dd', metavar = "downloadDir"
+            , default = os.getcwd()
+            , help = "Directory. All PDB files are downloaded into this dir"
+            )
+
+    group.add_argument('--fetch', '-f', metavar = 'fetchID'
+            , nargs = '+'
+            , help = 'Download this ID'
+            )
+
     class Args: pass 
     args = Args()
     parser.parse_args(namespace=args)
 
     # get the arguments.
-    q = Query(args)
-    q.getStructureReport()
-    print q.report
+    if args.query:
+        q = Query(args)
+        q.getStructureReport()
+        q.printReport()
+    elif args.fetch:
+        print("implement download pdb file")
 
 if __name__ == "__main__":
     main()

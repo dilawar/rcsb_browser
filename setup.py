@@ -30,7 +30,7 @@ setup(
     classifiers=classifiers,
     entry_points = {
         'console_scripts': [
-            'rcsb_browser = browser.main.main',
+            'rcsb_browser = browser.main',
             ],
         },
 )
