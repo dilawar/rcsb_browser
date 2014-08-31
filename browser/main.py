@@ -42,18 +42,18 @@ def main():
             )
 
     parser.add_argument('--query_type', '-qt', metavar='queryType'
-            , default = 'AdvancedKeywordQuery'
+            , default = 'Unspecified'
             , help = "Type of this query, prefixed by org.pdb.query.simple"
             )
 
-    parser.add_argument('--download_dir', '-dd', metavar = "downloadDir"
+    parser.add_argument('--download_dir', '-d', metavar = "downloadDir"
             , default = os.getcwd()
             , help = "Directory. All PDB files are downloaded into this dir"
             )
 
     group.add_argument('--fetch', '-f', metavar = 'fetchID'
             , nargs = '+'
-            , help = 'Download this ID'
+            , help = 'Download these ids'
             )
 
     class Args: pass 

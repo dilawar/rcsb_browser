@@ -1,7 +1,7 @@
 
 """query.py: 
 
-Last modified: Sat Jan 18, 2014  05:01PM
+Last modified: Sun Aug 31, 2014  02:03PM
 
 """
     
@@ -33,28 +33,65 @@ class Query():
         """Create a query with text"""
         self.args = args
         self.queryText = ' '.join(self.args.query)
+        self.queryType = self.args.query_type
+
         logger.info("Querying for: {}".format(self.queryText))
         self.urlbase = 'http://www.rcsb.org/pdb/rest'
         self.url = self.urlbase + '/search'
         self.query = ET.Element("orgPdbQuery")
-        self.queryType = "org.pdb.query.simple." + args.query_type
-        self.queryType = kwargs.get("queryType", self.queryType)
-        self.addQueryType(self.queryType)
+        self.queryTypePrefix = "org.pdb.query.simple."
+        self.addQueryType(args.query_type)
         self.ids = []
-        if "AdvancedKeywordQuery" in self.queryType:
-            self.addKeywords(self.queryText)
-
-    def addKeywords(self, keywords):
-        logger.info("Keywords: {}".format(keywords))
-        keywordsXML = ET.SubElement(self.query, "keywords")
-        keywordsXML.text = keywords
 
     def addQueryType(self, type):
         """Add type to query if given """
+
+        helpText = [ "Currently following types of queries are available:"
+                , "1 Structure description"
+                , "2 Strucuture tile"
+                , "3 Macromolecule name"
+                , "4 Text Search, searches for text in file, returns a lot of files"
+                ] 
+
+        if "Unspecified" in self.queryType:
+            print("\n\t".join(helpText))
+            qtype = raw_input("+ Your choice [default 1]:")
+            if qtype is None: qtype = 1
+            elif len(qtype.strip()) == 0: qtype = 1
+            else: qtype = int(qtype.strip())
+        else:
+            self.queryType = self.queryTypePrefix + 'StructDescQuery'
+            qtype = 0
+
         queryTypeXML = ET.SubElement(self.query, "queryType")
-        self.queryType = type
-        queryTypeXML.text = self.queryType
-        self.addDescription()
+
+        if qtype == 1:
+            self.queryType = self.queryTypePrefix + 'StructDescQuery'
+            queryTypeXML.text = self.queryType
+            childXml = ET.SubElement(self.query, "entity.pdbx_description.comparator")
+            childXml.text = "contains"
+            childXml = ET.SubElement(self.query, "entity.pdbx_description.value")
+            childXml.text = self.queryText
+
+        elif qtype == 2:
+            self.queryType = self.queryTypePrefix + 'StructTitleQuery'
+            queryTypeXML.text = self.queryType
+            childXml = ET.SubElement(self.query, "struct.title.comparator")
+            childXml.text = "contains"
+            childXml = ET.SubElement(self.query, "struct.title.value")
+            childXml.text = self.queryText
+
+        elif qtype == 3:
+            self.queryType = self.queryTypePrefix + 'MoleculeNameQuery'
+            queryTypeXML.text = self.queryType
+            childXml = ET.SubElement(self.query, "macromoleculeName")
+            childXml.text = self.queryText
+
+        else:
+            queryTypeXML.text = self.queryType
+            keywordsXML = ET.SubElement(self.query, "keywords")
+            keywordsXML.text = self.queryText
+
 
     def addDescription(self):
         description = ET.SubElement(self.query, "description")
