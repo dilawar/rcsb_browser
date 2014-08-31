@@ -34,7 +34,7 @@ classifiers = [
 
 setup(
     name = "rcsb_browser",
-    version = "0.0.1",
+    version = "0.1.0",
     description = "Command line browser for RCSB database",
     long_description = readme,
     packages = ["browser" ],
