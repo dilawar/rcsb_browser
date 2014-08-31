@@ -42,7 +42,7 @@ setup(
     install_requires = [ ],
     author = "Dilawar Singh",
     author_email = "dilawars@ncbs.res.in",
-    url = "http://github.com/dilawar/",
+    url = "http://github.com/dilawar/rcsb_browser",
     license='GPL',
     classifiers=classifiers,
     entry_points = {
